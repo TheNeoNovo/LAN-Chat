@@ -21,7 +21,7 @@ if WINDOWS:
 else:
     import select, termios, tty, fcntl
 
-VERSION     = "1.0.1"
+VERSION     = "1.0.2"
 MCAST_GROUP = "224.0.0.251"
 MCAST_PORT  = 5353
 CHAT_PORT   = 47331
