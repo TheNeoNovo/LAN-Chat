@@ -14,7 +14,7 @@ warn() { printf "${YEL}!${RST} %s\n" "$1"; }
 fail() { printf "${RED}✗${RST} %s\n" "$1"; exit 1; }
 
 echo ""
-printf "${BOLD}${CYN}termchat installer${RST} — LAN terminal chat\n"
+printf "${BOLD}${CYN}Termchat installer${RST} — LAN terminal chat\n"
 echo ""
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ esac
 # ── Done ──────────────────────────────────────────────────────────────────────
 
 echo ""
-ok "${BOLD}termchat installed!${RST}"
+ok "${BOLD}Termchat installed!${RST}"
 echo ""
 printf "  ${CYN}chat pub${RST}           join the public room\n"
 printf "  ${CYN}chat <id>${RST}          join a private room\n"

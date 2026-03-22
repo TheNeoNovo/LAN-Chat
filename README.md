@@ -24,10 +24,11 @@ The installer detects your OS, installs Python if needed, and adds the `chat` co
 chat pub              join the public room
 chat <id>             join or create a private room
 chat <id> <pw>        join a password-protected room
-chat dm <id>          open a DM with someone
+chat dm <id>          open a DM with someone (Working but needs a update)
 chat list             scan LAN for open rooms
 chat who              see who is in a room
 chat help             show all commands
+chat                  show all commands
 ```
 
 To leave — run a new `chat` command or press `Ctrl-C`.
@@ -37,7 +38,7 @@ To leave — run a new `chat` command or press `Ctrl-C`.
 ## Inside a room
 
 - Type and press Enter to send
-- `@name` to mention someone (highlighted for them)
+- `@name` to mention someone (highlighted for them) (Not Working)
 - Up/down arrows to scroll history
 - `Ctrl-C` to quit
 
@@ -45,10 +46,10 @@ To leave — run a new `chat` command or press `Ctrl-C`.
 
 ## How it works
 
-- No internet — stays 100% on your LAN
+- No internet — stays 100% on your LAN/NET
 - No accounts — uses your OS username automatically
 - First person to join becomes the host
-- When the host leaves, the next person silently takes over
+- When the host leaves, the next person silently takes over (Not Working)
 - When everyone leaves, the room is gone
 
 ---
@@ -76,3 +77,5 @@ If rooms can't find each other:
 **Linux / macOS:** `rm ~/.local/bin/chat ~/.local/bin/termchat.py`
 
 **Windows:** Delete `%USERPROFILE%\.termchat` and remove it from PATH in System Settings.
+
+(Or just you know chat uninstall)
