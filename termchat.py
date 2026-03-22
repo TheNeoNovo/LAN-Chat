@@ -11,9 +11,15 @@ termchat — LAN terminal chat. No internet. No accounts. Just chat.
   chat help             show help
 """
 
-import sys, os, socket, threading, time, json, hashlib, struct
-import select, termios, tty, fcntl, signal, re
+import sys, os, socket, threading, time, json, hashlib, struct, signal, re
 from datetime import datetime
+
+WINDOWS = sys.platform == "win32"
+
+if WINDOWS:
+    import msvcrt
+else:
+    import select, termios, tty, fcntl
 
 VERSION     = "1.0.0"
 MCAST_GROUP = "224.0.0.251"
@@ -80,17 +86,23 @@ class TUI:
         self._orig_fl  = None
 
     def raw_mode(self):
-        self._old_term = termios.tcgetattr(sys.stdin)
-        tty.setraw(sys.stdin.fileno())
-        fl = fcntl.fcntl(sys.stdin.fileno(), fcntl.F_GETFL)
-        fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, fl | os.O_NONBLOCK)
-        self._orig_fl = fl
+        if WINDOWS:
+            pass  # Windows reads char-by-char via msvcrt, no setup needed
+        else:
+            self._old_term = termios.tcgetattr(sys.stdin)
+            tty.setraw(sys.stdin.fileno())
+            fl = fcntl.fcntl(sys.stdin.fileno(), fcntl.F_GETFL)
+            fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, fl | os.O_NONBLOCK)
+            self._orig_fl = fl
 
     def restore(self):
-        try:
-            if self._old_term: termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self._old_term)
-            if self._orig_fl is not None: fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, self._orig_fl)
-        except: pass
+        if WINDOWS:
+            pass
+        else:
+            try:
+                if self._old_term: termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self._old_term)
+                if self._orig_fl is not None: fcntl.fcntl(sys.stdin.fileno(), fcntl.F_SETFL, self._orig_fl)
+            except: pass
 
     def _w(self, s): sys.stdout.write(s)
     def _mv(self, r, c=0): self._w(f"\033[{r};{c}H")
@@ -461,40 +473,72 @@ class Input:
     def run(self):
         self.tui.raw_mode()
         try:
-            while self.tui.running:
-                rl, _, _ = select.select([sys.stdin], [], [], 0.1)
-                if not rl: continue
-                try: ch = sys.stdin.read(1)
-                except: continue
-                if not ch: continue
-                code = ord(ch)
-
-                if code == 3:
-                    self._quit(); break
-                elif code == 13:
-                    self._submit()
-                elif code in (127, 8):
-                    self.tui.input_buf = self.tui.input_buf[:-1]
-                    self.tui.render()
-                elif code == 27:
-                    time.sleep(0.01); seq = ""
-                    try:
-                        while True:
-                            c2 = sys.stdin.read(1)
-                            if not c2: break
-                            seq += c2
-                    except: pass
-                    if seq == "[A":
-                        self.tui.scroll = self.tui._clamp(self.tui.scroll - 1, -9999, 0)
-                        self.tui.render()
-                    elif seq == "[B":
-                        self.tui.scroll = self.tui._clamp(self.tui.scroll + 1, -9999, 0)
-                        self.tui.render()
-                elif 32 <= code < 127:
-                    self.tui.input_buf += ch
-                    self.tui.render()
+            if WINDOWS:
+                self._run_windows()
+            else:
+                self._run_unix()
         finally:
             self.tui.restore()
+
+    def _run_windows(self):
+        while self.tui.running:
+            if not msvcrt.kbhit():
+                time.sleep(0.05); continue
+            ch = msvcrt.getwch()
+            code = ord(ch)
+
+            if code == 3 or ch == '\x03':       # Ctrl-C
+                self._quit(); break
+            elif ch in ('\r', '\n'):             # Enter
+                self._submit()
+            elif code in (8, 127):              # Backspace
+                self.tui.input_buf = self.tui.input_buf[:-1]
+                self.tui.render()
+            elif code == 0 or code == 224:      # Special key prefix (arrows)
+                ch2 = msvcrt.getwch()
+                if ch2 == 'H':                  # Up arrow
+                    self.tui.scroll = self.tui._clamp(self.tui.scroll - 1, -9999, 0)
+                    self.tui.render()
+                elif ch2 == 'P':                # Down arrow
+                    self.tui.scroll = self.tui._clamp(self.tui.scroll + 1, -9999, 0)
+                    self.tui.render()
+            elif 32 <= code < 127:
+                self.tui.input_buf += ch
+                self.tui.render()
+
+    def _run_unix(self):
+        while self.tui.running:
+            rl, _, _ = select.select([sys.stdin], [], [], 0.1)
+            if not rl: continue
+            try: ch = sys.stdin.read(1)
+            except: continue
+            if not ch: continue
+            code = ord(ch)
+
+            if code == 3:
+                self._quit(); break
+            elif code == 13:
+                self._submit()
+            elif code in (127, 8):
+                self.tui.input_buf = self.tui.input_buf[:-1]
+                self.tui.render()
+            elif code == 27:
+                time.sleep(0.01); seq = ""
+                try:
+                    while True:
+                        c2 = sys.stdin.read(1)
+                        if not c2: break
+                        seq += c2
+                except: pass
+                if seq == "[A":
+                    self.tui.scroll = self.tui._clamp(self.tui.scroll - 1, -9999, 0)
+                    self.tui.render()
+                elif seq == "[B":
+                    self.tui.scroll = self.tui._clamp(self.tui.scroll + 1, -9999, 0)
+                    self.tui.render()
+            elif 32 <= code < 127:
+                self.tui.input_buf += ch
+                self.tui.render()
 
     def _quit(self):
         self.tui.running = False
@@ -541,7 +585,8 @@ def enter_room(room_id, room_type, password, username):
         tui.add_user(username, is_host=True)
         tui.sys(f"Created {room_id} — you are host. Waiting for others...")
 
-    signal.signal(signal.SIGWINCH, lambda s, f: tui.render())
+    if not WINDOWS:
+        signal.signal(signal.SIGWINCH, lambda s, f: tui.render())
     _clear(); tui.render()
     Input(tui, host, client).run()
     tui.restore(); _clear()
