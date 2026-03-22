@@ -2,15 +2,15 @@
 """
 termchat v2.0 — LAN terminal chat
 
-  chat-pub              join public room
-  chat-<id>             join/create private room
-  chat-<id>-<pw>        join password-protected room
-  chat-dm-<id>          open DM with someone
-  chat-list             scan LAN for open rooms
-  chat-who              see who is in a room
-  chat-update           update to latest version
-  chat-uninstall        remove termchat
-  chat-help             show help
+  chat pub              join public room
+  chat <id>             join/create private room
+  chat <id> <pw>        join password-protected room
+  chat dm <id>          open DM with someone
+  chat list             scan LAN for open rooms
+  chat who              see who is in a room
+  chat update           update to latest version
+  chat uninstall        remove termchat
+  chat help             show help
 """
 
 import sys, os, socket, threading, time, json, hashlib, struct, signal, re
@@ -186,7 +186,7 @@ class TUI:
         bar = (f"{C.BG}{C.BOLD}{C.BWHT} termchat{C.RST}{C.BG} {C.DIM}v{VERSION}{C.RST}{C.BG}"
                f"  {room_label}{host_tag}{topic_str}"
                f"  {sc}{si}{C.RST}{C.BG} {nc}{self.username}{C.RST}{C.BG}"
-               f"{C.DIM}  chat-help{C.RST}")
+               f"{C.DIM}  chat help{C.RST}")
         pad = cols - len(strip_ansi(bar)) - 1
         self._w(bar + " " * max(0, pad))
 
@@ -764,8 +764,8 @@ class Input:
 
         # Check if it's an in-room chat- command
         lower = text.lower()
-        if lower.startswith("chat-"):
-            self.tui.pending_cmd = text
+        if lower.startswith("chat ") or lower == "chat":
+            self.tui.pending_cmd = text  # e.g. "chat list"
             self._quit()
             return
 
@@ -886,23 +886,23 @@ def cmd_help():
   {C.BOLD}{C.BCYN}termchat{C.RST} {C.DIM}v{VERSION}{C.RST}
 
   {C.BOLD}Terminal commands:{C.RST}
-    {C.BCYN}chat-pub{C.RST}              join the public room
-    {C.BCYN}chat-<id>{C.RST}             join or create a private room
-    {C.BCYN}chat-<id>-<pw>{C.RST}        join a password-protected room
-    {C.BCYN}chat-dm-<id>{C.RST}          open a DM with someone
-    {C.BCYN}chat-list{C.RST}             scan LAN for open rooms
-    {C.BCYN}chat-who{C.RST}              see who is in a room
-    {C.BCYN}chat-status-<s>{C.RST}       set your status (online/away/busy)
-    {C.BCYN}chat-update{C.RST}           update to latest version
-    {C.BCYN}chat-uninstall{C.RST}        remove termchat
-    {C.BCYN}chat-help{C.RST}             show this help
+    {C.BCYN}chat pub{C.RST}              join the public room
+    {C.BCYN}chat <id>{C.RST}             join or create a private room
+    {C.BCYN}chat <id> <pw>{C.RST}        join a password-protected room
+    {C.BCYN}chat dm <id>{C.RST}          open a DM with someone
+    {C.BCYN}chat list{C.RST}             scan LAN for open rooms
+    {C.BCYN}chat who{C.RST}              see who is in a room
+    {C.BCYN}chat status <s>{C.RST}       set your status (online/away/busy)
+    {C.BCYN}chat update{C.RST}           update to latest version
+    {C.BCYN}chat uninstall{C.RST}        remove termchat
+    {C.BCYN}chat help{C.RST}             show this help
 
   {C.BOLD}Inside a room:{C.RST}
     {C.DIM}@name{C.RST}                 mention someone (highlighted)
     {C.DIM}/topic <text>{C.RST}         set room topic (host only)
     {C.DIM}/status <s>{C.RST}           change your status (online/away/busy)
     {C.DIM}up/down arrows{C.RST}        scroll message history
-    {C.DIM}chat-<cmd>{C.RST}            leave room and run that command
+    {C.DIM}chat <cmd>{C.RST}            leave room and run that command
     {C.DIM}Ctrl-C{C.RST}               quit
 
   {C.BOLD}Statuses:{C.RST}  {C.BGRN}● online{C.RST}   {C.BYEL}○ away{C.RST}   {C.BRED}◆ busy{C.RST}
@@ -966,15 +966,10 @@ def dispatch(raw_args):
     cmd_str = raw_args[0].lower()
     # strip leading "chat-" prefix if present (when called as `chat pub` style too)
     if cmd_str == "chat":
-        # space-separated fallback: "chat pub" -> treat rest as args
+        # space-separated: "chat pub", "chat myroom mypass"
         parts = [p for p in raw_args[1:]]
         sub   = parts[0].lower() if parts else "help"
         rest  = parts[1:]
-    elif cmd_str.startswith("chat-"):
-        # dash-separated: "chat-pub", "chat-myroom-mypass"
-        parts = cmd_str[5:].split("-", 1)  # split after "chat-" at most once more
-        sub   = parts[0]
-        rest  = [parts[1]] if len(parts) > 1 else []
     else:
         sub  = cmd_str
         rest = raw_args[1:]
@@ -994,19 +989,19 @@ def dispatch(raw_args):
         cmd_status(s)
     elif sub == "pub":
         pending = enter_room("pub", "pub", "", username, status)
-        if pending: dispatch([pending])
+        if pending: dispatch(pending.split())
     elif sub == "dm":
         target = rest[0] if rest else ""
         if not target: print(f"{C.BRED}Usage: chat-dm-<username>{C.RST}"); return
         dm_id = "dm-" + "-".join(sorted([username, target]))
         pending = enter_room(dm_id, "dm", "", username, status)
-        if pending: dispatch([pending])
+        if pending: dispatch(pending.split())
     elif sub:
         room_id  = sub
         password = rest[0] if rest else ""
         pending = enter_room(room_id, "password" if password else "private",
                              password, username, status)
-        if pending: dispatch([pending])
+        if pending: dispatch(pending.split())
     else:
         cmd_help()
 

@@ -104,10 +104,10 @@ Write-Ok "termchat installed!"
 Write-Host ""
 Write-Host "  Open a NEW terminal window, then type:" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "    chat-pub          join the public room" -ForegroundColor Cyan
-Write-Host "    chat-<id>         join a private room" -ForegroundColor Cyan
-Write-Host "    chat-<id>-<pw>    join a password room" -ForegroundColor Cyan
+Write-Host "    chat pub          join the public room" -ForegroundColor Cyan
+Write-Host "    chat <id>         join a private room" -ForegroundColor Cyan
+Write-Host "    chat <id> <pw>    join a password room" -ForegroundColor Cyan
 Write-Host "    chat dm <name>    DM someone" -ForegroundColor Cyan
-Write-Host "    chat-list         see rooms on LAN" -ForegroundColor Cyan
-Write-Host "    chat-help         show all commands" -ForegroundColor Cyan
+Write-Host "    chat list         see rooms on LAN" -ForegroundColor Cyan
+Write-Host "    chat help         show all commands" -ForegroundColor Cyan
 Write-Host ""

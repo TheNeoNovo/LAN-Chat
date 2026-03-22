@@ -19,16 +19,16 @@ irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
 ## Commands
 
 ```
-chat-pub              join the public room
-chat-<id>             join or create a private room
-chat-<id>-<pw>        join a password-protected room
-chat-dm-<id>          open a DM with someone
-chat-list             scan LAN for open rooms
-chat-who              see who is in a room
-chat-status-<s>       set your status (online / away / busy)
-chat-update           update to latest version
-chat-uninstall        remove termchat
-chat-help             show all commands
+chat pub              join the public room
+chat <id>             join or create a private room
+chat <id> <pw>        join a password-protected room
+chat dm <id>          open a DM with someone
+chat list             scan LAN for open rooms
+chat who              see who is in a room
+chat status <s>       set your status (online / away / busy)
+chat update           update to latest version
+chat uninstall        remove termchat
+chat help             show all commands
 ```
 
 ---
@@ -38,8 +38,8 @@ chat-help             show all commands
 - Type and press Enter to send
 - `@name` to mention someone (highlighted for them)
 - `/topic <text>` to set the room topic (host only)
-- `/status <s>` to change your status
-- `chat-<cmd>` to leave the room and run a command
+- `/status <s>` to change your status mid-session
+- Type `chat <cmd>` to leave the room and run a command
 - Up/Down arrows to scroll history
 - Ctrl-C to quit
 
@@ -52,18 +52,16 @@ chat-help             show all commands
 │ #pub      *  │  12:00:01 alice - hey!     │ 2 online   │
 │ #devroom     │  12:00:05 bob - hi         │ ^ alice    │
 │              │  * bob joined              │  ● bob     │
-├──────────────┴────────────────────────────┴────────────┤
-│ alice > _                                               │
-└─────────────────────────────────────────────────────────┘
+├──────────────┴───────────────────────────┴────────────┤
+│ alice > _                                              │
+└────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Statuses
 
-- `●` online
-- `○` away  
-- `◆` busy
+- `●` online  `○` away  `◆` busy
 
 ---
 
@@ -71,23 +69,15 @@ chat-help             show all commands
 
 - No internet — stays 100% on your LAN
 - No accounts — uses your OS username automatically
-- First person to join a room becomes the host
-- When the host leaves, next person silently takes over
-- When everyone leaves, the room is gone
-- Auto-reconnects if the host temporarily drops
+- First person to join becomes the host
+- Host transfers silently when they leave
+- Room disappears when everyone leaves
+- Auto-reconnects if host temporarily drops
 
 ---
 
 ## Requirements
 
-- Python 3.7+ (installer handles this)
+- Python 3.7+  (installer handles this)
 - Same WiFi / LAN as who you want to chat with
 - Ports: UDP 5353 (discovery), TCP 47331 (chat)
-
----
-
-## Uninstall
-
-```
-chat-uninstall
-```
