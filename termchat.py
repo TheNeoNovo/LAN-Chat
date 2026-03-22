@@ -653,7 +653,7 @@ def _find_self():
 
 def cmd_update():
     import urllib.request
-    RAW = "https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/termchat.py"
+    RAW = "https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/termchat.py"
     script, _ = _find_self()
     print(f"{C.DIM}Checking for update...{C.RST}", flush=True)
     try:

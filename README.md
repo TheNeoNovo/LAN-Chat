@@ -6,12 +6,12 @@ LAN terminal chat. No internet. No accounts. No servers. Just your network.
 
 **Linux / macOS:**
 ```sh
-curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh | sh
 ```
 
 **Windows PowerShell:**
 ```powershell
-irm https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
 ```
 
 The installer detects your OS, installs Python if needed, and adds the `chat` command to your PATH.

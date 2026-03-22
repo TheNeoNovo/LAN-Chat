@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 # termchat installer — Linux / macOS
-# Usage: curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.sh | sh
+# Usage: curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh | sh
 
 set -e
 
-REPO="https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main"
+REPO="https://raw.githubusercontent.com/TheNeoNovo/Termchat/main"
 
 RED='\033[0;31m'; GRN='\033[0;32m'; YEL='\033[0;33m'; CYN='\033[0;36m'
 BOLD='\033[1m'; RST='\033[0m'
@@ -132,10 +132,10 @@ esac
 echo ""
 ok "${BOLD}termchat installed!${RST}"
 echo ""
-printf "  ${CYN}c/pub${RST}           join the public room\n"
-printf "  ${CYN}c/<id>${RST}          join a private room\n"
-printf "  ${CYN}c/<id>/<pw>${RST}     join a password room\n"
-printf "  ${CYN}c/dm/<name>${RST}     DM someone\n"
-printf "  ${CYN}c/list${RST}          see rooms on LAN\n"
-printf "  ${CYN}c/help${RST}          show all commands\n"
+printf "  ${CYN}chat pub${RST}           join the public room\n"
+printf "  ${CYN}chat <id>${RST}          join a private room\n"
+printf "  ${CYN}chat <id> <pw>${RST}     join a password room\n"
+printf "  ${CYN}chat dm <name>${RST}     DM someone\n"
+printf "  ${CYN}chat list${RST}          see rooms on LAN\n"
+printf "  ${CYN}chat help${RST}          show all commands\n"
 echo ""

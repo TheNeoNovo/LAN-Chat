@@ -1,8 +1,8 @@
 # termchat Windows Installer (PowerShell)
-# Run with: irm https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.ps1 | iex
+# Run with: irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
-$REPO = "https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main"
+$REPO = "https://raw.githubusercontent.com/TheNeoNovo/Termchat/main"
 
 function Write-Step { Write-Host "  $args" -ForegroundColor Cyan }
 function Write-Ok   { Write-Host "  [OK] $args" -ForegroundColor Green }
@@ -55,7 +55,7 @@ if (-not $PYTHON) {
             Write-Warn "Python installed but this terminal can't see it yet."
             Write-Warn "Please close this window, open a NEW terminal, and run:"
             Write-Host ""
-            Write-Host "  irm https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.ps1 | iex" -ForegroundColor Cyan
+            Write-Host "  irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex" -ForegroundColor Cyan
             Write-Host ""
             exit 0
         }
@@ -104,10 +104,10 @@ Write-Ok "termchat installed!"
 Write-Host ""
 Write-Host "  Open a NEW terminal window, then type:" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "    c/pub          join the public room" -ForegroundColor Cyan
-Write-Host "    c/<id>         join a private room" -ForegroundColor Cyan
-Write-Host "    c/<id>/<pw>    join a password room" -ForegroundColor Cyan
-Write-Host "    c/dm/<name>    DM someone" -ForegroundColor Cyan
-Write-Host "    c/list         see rooms on LAN" -ForegroundColor Cyan
-Write-Host "    c/help         show all commands" -ForegroundColor Cyan
+Write-Host "    chat pub          join the public room" -ForegroundColor Cyan
+Write-Host "    chat <id>         join a private room" -ForegroundColor Cyan
+Write-Host "    chat <id> <pw>    join a password room" -ForegroundColor Cyan
+Write-Host "    chat dm <name>    DM someone" -ForegroundColor Cyan
+Write-Host "    chat list         see rooms on LAN" -ForegroundColor Cyan
+Write-Host "    chat help         show all commands" -ForegroundColor Cyan
 Write-Host ""
