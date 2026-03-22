@@ -1,4 +1,4 @@
-# termchat
+# Termchat
 
 LAN terminal chat. No internet. No accounts. No servers. Just your network.
 
