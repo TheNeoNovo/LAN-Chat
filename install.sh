@@ -101,12 +101,12 @@ ok "Downloaded termchat.py"
 
 # ── Create c wrapper ──────────────────────────────────────────────────────────
 
-cat > "$INSTALL_DIR/c" << WRAPPER
+cat > "$INSTALL_DIR/chat" << WRAPPER
 #!/usr/bin/env sh
 exec "$PYTHON" "$INSTALL_DIR/termchat.py" "\$@"
 WRAPPER
-chmod +x "$INSTALL_DIR/c"
-ok "Created 'c' command"
+chmod +x "$INSTALL_DIR/chat"
+ok "Created chat command"
 
 # ── PATH ──────────────────────────────────────────────────────────────────────
 

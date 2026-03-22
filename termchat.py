@@ -2,13 +2,13 @@
 """
 termchat — LAN terminal chat. No internet. No accounts. Just chat.
 
-  c/pub              join public room
-  c/<id>             join/create private room
-  c/<id>/<pw>        join password-protected room
-  c/dm/<id>          open DM with someone
-  c/list             scan LAN for open rooms
-  c/who              list users in current room
-  c/help             show help
+  chat pub              join public room
+  chat <id>             join/create private room
+  chat <id> <pw>        join password-protected room
+  chat dm <id>          open DM with someone
+  chat list             scan LAN for open rooms
+  chat who              see who is in a room
+  chat help             show help
 """
 
 import sys, os, socket, threading, time, json, hashlib, struct
@@ -24,7 +24,7 @@ CHAT_PORT   = 47331
 
 class C:
     RST  = "\033[0m";  BOLD = "\033[1m";  DIM  = "\033[2m";  REV  = "\033[7m"
-    YEL  = "\033[33m"; MAG  = "\033[35m"
+    YEL  = "\033[33m"
     BRED = "\033[91m"; BGRN = "\033[92m"; BYEL = "\033[93m"
     BBLU = "\033[94m"; BMAG = "\033[95m"; BCYN = "\033[96m"; BWHT = "\033[97m"
     BG   = "\033[40m"
@@ -38,7 +38,7 @@ def term_size():
         import shutil; s = shutil.get_terminal_size(); return s.columns, s.lines
     except: return 80, 24
 
-# ── Wire protocol (length-prefixed JSON) ──────────────────────────────────────
+# ── Wire protocol ─────────────────────────────────────────────────────────────
 
 def encode(obj):
     d = json.dumps(obj).encode()
@@ -111,18 +111,18 @@ class TUI:
 
         # top bar
         self._mv(1); self._cl()
-        host_tag = f" {C.BYEL}★{C.RST}{C.BG}" if self.is_host else ""
+        host_tag = f" {C.BYEL}*host*{C.RST}{C.BG}" if self.is_host else ""
         room_label = {
-            "pub":      f"{C.BGRN}#pub{C.RST}{C.BG}",
-            "private":  f"{C.BCYN}#{self.room_id}{C.RST}{C.BG}",
-            "password": f"{C.BMAG}#{self.room_id}{C.RST}{C.BG}",
+            "pub":      f"{C.BGRN}pub{C.RST}{C.BG}",
+            "private":  f"{C.BCYN}{self.room_id}{C.RST}{C.BG}",
+            "password": f"{C.BMAG}{self.room_id}{C.RST}{C.BG}",
             "dm":       f"{C.BYEL}DM:{self.room_id}{C.RST}{C.BG}",
-        }.get(self.room_type, f"#{self.room_id}")
+        }.get(self.room_type, self.room_id)
         nc  = name_color(self.username)
         bar = (f"{C.BG}{C.BOLD}{C.BWHT} termchat {C.RST}{C.BG}"
                f"  {room_label}  "
                f"{C.DIM}{nc}{self.username}{C.RST}{C.BG}{host_tag}"
-               f"{C.DIM}  c/help{C.RST}")
+               f"{C.DIM}  chat help{C.RST}")
         pad = cols - len(strip_ansi(bar)) - 1
         self._w(bar + " " * max(0, pad))
 
@@ -205,7 +205,7 @@ class TUI:
         self.sys("You are now host" if name == self.username else f"{name} is now host")
         self._render()
 
-# ── Multicast discovery ───────────────────────────────────────────────────────
+# ── Discovery ─────────────────────────────────────────────────────────────────
 
 class Announcer:
     def __init__(self, room_id, room_type, port, pw_hash=""):
@@ -342,7 +342,6 @@ class Host:
             self._broadcast({"type": "user_join", "name": name,
                               "host": self.tui.username}, skip=name)
 
-            # skip adding ghost "__who__" probe to TUI
             if name != "__who__":
                 self.tui.add_user(name)
 
@@ -453,7 +452,7 @@ class Client:
         try: self._sock.close()
         except: pass
 
-# ── Input loop ────────────────────────────────────────────────────────────────
+# ── Input ─────────────────────────────────────────────────────────────────────
 
 class Input:
     def __init__(self, tui, host, client):
@@ -470,14 +469,14 @@ class Input:
                 if not ch: continue
                 code = ord(ch)
 
-                if code == 3:               # Ctrl-C
+                if code == 3:
                     self._quit(); break
-                elif code == 13:            # Enter
+                elif code == 13:
                     self._submit()
-                elif code in (127, 8):      # Backspace
+                elif code in (127, 8):
                     self.tui.input_buf = self.tui.input_buf[:-1]
                     self.tui.render()
-                elif code == 27:            # arrows
+                elif code == 27:
                     time.sleep(0.01); seq = ""
                     try:
                         while True:
@@ -555,12 +554,10 @@ def cmd_list():
     d = Discovery(); d.start()
     rooms = d.scan(3.0); d.stop()
     if not rooms: print(f"{C.DIM}No rooms found.{C.RST}"); return
-    kinds = {"pub": "public", "private": "private",
-             "password": "password", "dm": "dm"}
+    kinds = {"pub": "public", "private": "private", "password": "password", "dm": "dm"}
     print(f"{C.BOLD}Rooms on LAN:{C.RST}")
     for rid, info in rooms.items():
-        print(f"  {C.BCYN}{rid}{C.RST}  {C.DIM}{kinds.get(info['type'], info['type'])}  "
-              f"{info['addr']}{C.RST}")
+        print(f"  {C.BCYN}{rid}{C.RST}  {C.DIM}{kinds.get(info['type'], info['type'])}  {info['addr']}{C.RST}")
 
 def cmd_who(room_id):
     print(f"{C.DIM}Looking for {room_id}...{C.RST}", flush=True)
@@ -586,20 +583,74 @@ def cmd_help():
   {C.BOLD}{C.BCYN}termchat{C.RST} {C.DIM}v{VERSION}{C.RST}
 
   {C.BOLD}Commands:{C.RST}
-    {C.BCYN}c/pub{C.RST}              join public room
-    {C.BCYN}c/<id>{C.RST}             join/create private room
-    {C.BCYN}c/<id>/<pw>{C.RST}        join password-protected room
-    {C.BCYN}c/dm/<id>{C.RST}          open DM with someone
-    {C.BCYN}c/list{C.RST}             scan LAN for open rooms
-    {C.BCYN}c/who{C.RST}              list users in a room
-    {C.BCYN}c/help{C.RST}             show this help
+    {C.BCYN}chat pub{C.RST}              join the public room
+    {C.BCYN}chat <id>{C.RST}             join or create a private room
+    {C.BCYN}chat <id> <pw>{C.RST}        join a password-protected room
+    {C.BCYN}chat dm <id>{C.RST}          open a DM with someone
+    {C.BCYN}chat list{C.RST}             scan LAN for open rooms
+    {C.BCYN}chat who{C.RST}              see who is in a room
+    {C.BCYN}chat update{C.RST}           update to the latest version
+    {C.BCYN}chat uninstall{C.RST}        remove termchat from this machine
+    {C.BCYN}chat help{C.RST}             show this help
 
   {C.BOLD}Inside a room:{C.RST}
-    {C.DIM}@name{C.RST}               mention someone
-    {C.DIM}up/down arrows{C.RST}      scroll history
-    {C.DIM}Ctrl-C{C.RST}              quit / leave
-    {C.DIM}run a new c/ command{C.RST} to switch rooms
+    {C.DIM}@name{C.RST}                 mention someone
+    {C.DIM}up/down arrows{C.RST}        scroll history
+    {C.DIM}Ctrl-C{C.RST}               quit / leave
+    {C.DIM}run a new chat command{C.RST} to switch rooms
 """)
+
+def _find_self():
+    """Return the path to this script and its parent directory."""
+    script = os.path.abspath(__file__)
+    folder = os.path.dirname(script)
+    return script, folder
+
+def cmd_update():
+    import urllib.request
+    RAW = "https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/termchat.py"
+    script, _ = _find_self()
+    print(f"{C.DIM}Checking for update...{C.RST}", flush=True)
+    try:
+        with urllib.request.urlopen(RAW, timeout=8) as r:
+            new_src = r.read()
+        # Extract version from downloaded source
+        new_ver = VERSION
+        for line in new_src.decode().splitlines():
+            if line.strip().startswith("VERSION"):
+                new_ver = line.split('"')[1] if '"' in line else VERSION
+                break
+        if new_ver == VERSION:
+            print(f"{C.BGRN}Already up to date{C.RST} (v{VERSION})")
+            return
+        with open(script, "wb") as f:
+            f.write(new_src)
+        print(f"{C.BGRN}Updated{C.RST} v{VERSION} -> v{new_ver}")
+    except Exception as e:
+        print(f"{C.BRED}Update failed:{C.RST} {e}")
+
+def cmd_uninstall():
+    script, folder = _find_self()
+    print(f"{C.BYEL}This will remove termchat from your machine.{C.RST}")
+    ans = input("  Are you sure? [y/N] ").strip().lower()
+    if ans != "y":
+        print(f"{C.DIM}Cancelled.{C.RST}"); return
+
+    removed = []
+    # Remove termchat.py
+    try: os.remove(script); removed.append(script)
+    except Exception as e: print(f"{C.DIM}Could not remove {script}: {e}{C.RST}")
+
+    # Remove chat / chat.cmd wrapper
+    for wrapper in [os.path.join(folder, "chat"), os.path.join(folder, "chat.cmd")]:
+        if os.path.exists(wrapper):
+            try: os.remove(wrapper); removed.append(wrapper)
+            except Exception as e: print(f"{C.DIM}Could not remove {wrapper}: {e}{C.RST}")
+
+    if removed:
+        print(f"{C.BGRN}Removed:{C.RST}")
+        for f in removed: print(f"  {C.DIM}{f}{C.RST}")
+    print(f"{C.DIM}termchat uninstalled. Goodbye.{C.RST}")
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -613,29 +664,24 @@ def main():
     args = sys.argv[1:]
     if not args: cmd_help(); return
 
-    raw   = args[0]
-    path  = raw[2:] if raw.lower().startswith("c/") else raw
-    parts = [p for p in path.split("/") if p]
-    cmd   = parts[0].lower() if parts else ""
+    cmd = args[0].lower()
 
-    if cmd == "help":  cmd_help(); return
-    if cmd == "list":  cmd_list(); return
-    if cmd == "who":
-        cmd_who(parts[1] if len(parts) > 1 else "pub"); return
-
-    username = get_username()
-
-    if cmd == "pub":
-        enter_room("pub", "pub", "", username)
+    if cmd == "help":                    cmd_help()
+    elif cmd == "update":                cmd_update()
+    elif cmd == "uninstall":             cmd_uninstall()
+    elif cmd == "list":                  cmd_list()
+    elif cmd == "who":                   cmd_who(args[1] if len(args) > 1 else "pub")
+    elif cmd == "pub":                   enter_room("pub", "pub", "", get_username())
     elif cmd == "dm":
-        target = parts[1] if len(parts) > 1 else ""
-        if not target: print(f"{C.BRED}Usage: c/dm/<username>{C.RST}"); return
+        target = args[1] if len(args) > 1 else ""
+        if not target: print(f"{C.BRED}Usage: chat dm <username>{C.RST}"); return
+        username = get_username()
         dm_id = "dm-" + "-".join(sorted([username, target]))
         enter_room(dm_id, "dm", "", username)
     elif cmd:
         room_id  = cmd
-        password = parts[1] if len(parts) > 1 else ""
-        enter_room(room_id, "password" if password else "private", password, username)
+        password = args[1] if len(args) > 1 else ""
+        enter_room(room_id, "password" if password else "private", password, get_username())
     else:
         cmd_help()
 

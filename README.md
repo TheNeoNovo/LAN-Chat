@@ -14,31 +14,31 @@ curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.sh
 irm https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.ps1 | iex
 ```
 
-The installer detects your OS, installs Python if needed, downloads termchat, and adds the `c` command to your PATH.
+The installer detects your OS, installs Python if needed, and adds the `chat` command to your PATH.
 
 ---
 
 ## Commands
 
 ```
-c/pub              join the public room
-c/<id>             join or create a private room
-c/<id>/<pw>        join or create a password-protected room
-c/dm/<name>        open a DM with someone
-c/list             scan LAN for open rooms
-c/who              see who is in a room
-c/help             show all commands
+chat pub              join the public room
+chat <id>             join or create a private room
+chat <id> <pw>        join a password-protected room
+chat dm <id>          open a DM with someone
+chat list             scan LAN for open rooms
+chat who              see who is in a room
+chat help             show all commands
 ```
 
-To leave a room — just run a new `c/` command or press `Ctrl-C`.
+To leave — run a new `chat` command or press `Ctrl-C`.
 
 ---
 
 ## Inside a room
 
-- Type normally to chat
+- Type and press Enter to send
 - `@name` to mention someone (highlighted for them)
-- `↑ ↓` arrows to scroll message history
+- Up/down arrows to scroll history
 - `Ctrl-C` to quit
 
 ---
@@ -47,8 +47,7 @@ To leave a room — just run a new `c/` command or press `Ctrl-C`.
 
 - No internet — stays 100% on your LAN
 - No accounts — uses your OS username automatically
-- No config — works out of the box
-- First person to join a room becomes the host
+- First person to join becomes the host
 - When the host leaves, the next person silently takes over
 - When everyone leaves, the room is gone
 
@@ -57,20 +56,16 @@ To leave a room — just run a new `c/` command or press `Ctrl-C`.
 ## Requirements
 
 - Python 3.7+ (installer handles this)
-- Same WiFi / LAN network as who you want to chat with
+- Same WiFi / LAN as who you want to chat with
 - Ports: UDP 5353 (discovery), TCP 47331 (chat)
 
 ---
 
-## Firewall note
+## Firewall
 
-If rooms can't find each other, allow these ports:
+If rooms can't find each other:
 
-**Linux:**
-```sh
-sudo ufw allow 47331/tcp
-sudo ufw allow 5353/udp
-```
+**Linux:** `sudo ufw allow 47331/tcp && sudo ufw allow 5353/udp`
 
 **Windows:** Allow Python through Windows Defender Firewall when prompted.
 
@@ -78,9 +73,6 @@ sudo ufw allow 5353/udp
 
 ## Uninstall
 
-**Linux / macOS:**
-```sh
-rm ~/.local/bin/c ~/.local/bin/termchat.py
-```
+**Linux / macOS:** `rm ~/.local/bin/chat ~/.local/bin/termchat.py`
 
-**Windows:** Delete `%USERPROFILE%\.termchat` and remove it from your PATH in System Settings.
+**Windows:** Delete `%USERPROFILE%\.termchat` and remove it from PATH in System Settings.

@@ -82,9 +82,9 @@ Write-Ok "Downloaded termchat.py"
 
 # ── Create c.cmd wrapper ──────────────────────────────────────────────────────
 
-$WRAPPER = "$INSTALL_DIR\c.cmd"
+$WRAPPER = "$INSTALL_DIR\chat.cmd"
 Set-Content -Path $WRAPPER -Value "@echo off`r`n`"$PYTHON`" `"$DEST_PY`" %*"
-Write-Ok "Created c.cmd"
+Write-Ok "Created chat.cmd"
 
 # ── Add to PATH ───────────────────────────────────────────────────────────────
 
