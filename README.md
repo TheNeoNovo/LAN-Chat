@@ -1,124 +1,86 @@
 # termchat
 
-**LAN terminal chat. No internet. No accounts. No servers. Just your network.**
-
-```
-  termchat v1.0.0
-
-  c/pub           join public room
-  c/<id>          join private room
-  c/<id>/<pw>     join password-protected room
-  c/end           leave room
-```
-
----
+LAN terminal chat. No internet. No accounts. No servers. Just your network.
 
 ## Install
 
-### Linux / macOS (one command)
-
+**Linux / macOS:**
 ```sh
-curl -fsSL https://raw.githubusercontent.com/termc/termc/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.sh | sh
 ```
 
-### Windows PowerShell (one command)
-
+**Windows PowerShell:**
 ```powershell
-irm https://raw.githubusercontent.com/termc/termc/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/TheNeoNovo/LAN-Chat/main/install.ps1 | iex
 ```
 
-The installer will:
-- Detect your OS
-- Check for Python 3.7+
-- Offer to install Python if it's not found
-- Download termchat
-- Add the `chat` command to your PATH
-
----
-
-## Usage
-
-```sh
-c/pub              # join the public room (anyone on LAN)
-c/devteam          # join/create private room "devteam"
-c/devteam/secret   # join/create password-protected room
-c/end              # leave (or just Ctrl-C)
-```
-
-**How rooms work:**
-- The first person to run a room command **becomes the host**
-- Others on your LAN discover the room automatically via mDNS
-- When the host leaves, the **next person becomes host silently**
-- When the room is empty, it's **gone** — no trace left
+The installer detects your OS, installs Python if needed, downloads termchat, and adds the `c` command to your PATH.
 
 ---
 
 ## Commands
 
-| Command | What it does |
-|---------|-------------|
-| `/help` | Show all commands |
-| `/who` | List users in this room |
-| `/list` | Scan LAN for open rooms |
-| `/dm <name>` | Start a private DM session |
-| `/dm` | Exit DM mode, back to room |
-| `/nick <name>` | Change your display name |
-| `/leave` | Leave the room |
-| `@name` | Mention someone (they see it highlighted) |
-| `↑ ↓` arrows | Scroll message history |
-| `Ctrl-C` | Quit |
+```
+c/pub              join the public room
+c/<id>             join or create a private room
+c/<id>/<pw>        join or create a password-protected room
+c/dm/<name>        open a DM with someone
+c/list             scan LAN for open rooms
+c/who              see who is in a room
+c/help             show all commands
+```
+
+To leave a room — just run a new `c/` command or press `Ctrl-C`.
+
+---
+
+## Inside a room
+
+- Type normally to chat
+- `@name` to mention someone (highlighted for them)
+- `↑ ↓` arrows to scroll message history
+- `Ctrl-C` to quit
 
 ---
 
 ## How it works
 
-```
-You (host)                      Others on LAN
-────────────────────────────────────────────────
-c/myroom                     c/myroom
-    │                               │
-    ├── Binds TCP on port 47331      ├── Sends mDNS multicast
-    ├── Announces via UDP multicast  │   discovers room
-    │                               ├── Connects to your IP
-    │◄──────────────── TCP ─────────┤
-    │                               │
-    │   Messages flow both ways      │
-    └── History kept in memory  ────┘
-        until room closes
-```
-
-- **No internet** — stays 100% on your LAN
-- **No accounts** — uses your OS username automatically
-- **No config** — works out of the box
-- **No servers** — whoever joins first hosts
-- **No persistence** — rooms die when empty
+- No internet — stays 100% on your LAN
+- No accounts — uses your OS username automatically
+- No config — works out of the box
+- First person to join a room becomes the host
+- When the host leaves, the next person silently takes over
+- When everyone leaves, the room is gone
 
 ---
 
 ## Requirements
 
-- Python 3.7+ (installer can install this for you)
-- Same WiFi / LAN network as the people you want to chat with
-- Ports: UDP 5353 (mDNS discovery), TCP 47331 (chat)
+- Python 3.7+ (installer handles this)
+- Same WiFi / LAN network as who you want to chat with
+- Ports: UDP 5353 (discovery), TCP 47331 (chat)
 
 ---
 
 ## Firewall note
 
-If users can't find each other's rooms, check that UDP multicast (224.0.0.251:5353) and TCP port 47331 are allowed on your local network firewall.
+If rooms can't find each other, allow these ports:
 
-On Linux:
+**Linux:**
 ```sh
 sudo ufw allow 47331/tcp
 sudo ufw allow 5353/udp
 ```
 
+**Windows:** Allow Python through Windows Defender Firewall when prompted.
+
 ---
 
 ## Uninstall
 
+**Linux / macOS:**
 ```sh
-rm ~/.local/bin/chat ~/.local/bin/termchat.py
+rm ~/.local/bin/c ~/.local/bin/termchat.py
 ```
 
-Windows: delete `%USERPROFILE%\.termchat` and remove it from your PATH.
+**Windows:** Delete `%USERPROFILE%\.termchat` and remove it from your PATH in System Settings.
