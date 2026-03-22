@@ -350,6 +350,8 @@ def run_chat(room_id, room_type, password, username):
         print_line(f"{DIM}* {msg}{RST}")
         rewrite_input(inp[0])
 
+    inp = [""]   # defined early so all closures can safely access it
+
     # Setup screen
     sys.stdout.write("\033[2J\033[H")
     header()
@@ -389,8 +391,6 @@ def run_chat(room_id, room_type, password, username):
 
     rewrite_input()
 
-    inp = [""]   # mutable so inner functions can update it
-
     # ── Input loop ────────────────────────────────────────────────────────────
     old_term = None
     try:
@@ -421,7 +421,11 @@ def run_chat(room_id, room_type, password, username):
                 text = inp[0].strip()
                 inp[0] = ""
                 if text:
-                    if host:  host.send(text);   on_msg(username, text, datetime.now().strftime("%H:%M"))
+                    if text.lower() == "chat end":
+                        running.clear(); break
+                    elif text.lower() == "chat help":
+                        on_sys("Commands: chat <room>  chat list  chat end  chat update  chat uninstall  chat help")
+                    elif host:  host.send(text);   on_msg(username, text, datetime.now().strftime("%H:%M"))
                     elif client: client.send(text); on_msg(username, text, datetime.now().strftime("%H:%M"))
                 rewrite_input()
             elif code in (8, 127):
@@ -489,6 +493,18 @@ def cmd_uninstall():
             except Exception as e: print(f"  {DIM}Could not remove {f}: {e}{RST}")
     print(f"{DIM}Done.{RST}")
 
+def cmd_help():
+    print(f"{BOLD}termchat{RST} v{VERSION}")
+    print()
+    print(f"  {BCYN}chat <room>{RST}         join or create a room")
+    print(f"  {BCYN}chat <room> <pw>{RST}     join a password-protected room")
+    print(f"  {BCYN}chat list{RST}            list rooms on LAN")
+    print(f"  {BCYN}chat end{RST}             leave current room (or Ctrl-C)")
+    print(f"  {BCYN}chat update{RST}          update termchat")
+    print(f"  {BCYN}chat uninstall{RST}       remove termchat")
+    print(f"  {BCYN}chat help{RST}            show this")
+    print()
+
 def get_username():
     return (os.environ.get("USER") or os.environ.get("USERNAME") or
             os.environ.get("LOGNAME") or "user")[:32]
@@ -500,15 +516,20 @@ def main():
         print(f"  chat <room>          join or create a room")
         print(f"  chat <room> <pw>     join a password room")
         print(f"  chat list            list rooms on LAN")
+        print(f"  chat end             leave current room")
         print(f"  chat update          update termchat")
         print(f"  chat uninstall       remove termchat")
+        print(f"  chat help            show this")
         return
 
     cmd = args[0].lower()
 
-    if cmd == "list":        cmd_list()
+    if cmd == "help":        cmd_help()
+    elif cmd == "list":      cmd_list()
     elif cmd == "update":    cmd_update()
     elif cmd == "uninstall": cmd_uninstall()
+    elif cmd == "end":
+        print(f"{DIM}Not in a room.{RST}")
     elif cmd == "pub":
         run_chat("pub", "pub", "", get_username())
     else:
