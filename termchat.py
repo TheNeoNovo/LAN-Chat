@@ -21,7 +21,7 @@ if WINDOWS:
 else:
     import select, termios, tty, fcntl
 
-VERSION     = "1.0.0"
+VERSION     = "1.0.1"
 MCAST_GROUP = "224.0.0.251"
 MCAST_PORT  = 5353
 CHAT_PORT   = 47331
@@ -551,10 +551,10 @@ class Input:
         if not text: self.tui.render(); return
         if self.host:
             self.host.send_chat(text)
-            self.tui.msg(self.tui.username, text)
+            self.tui.msg(self.tui.username, text)  # host echoes locally (not in route)
         elif self.client:
             self.client.send_chat(text)
-            self.tui.msg(self.tui.username, text)
+            # no local echo — server broadcasts back and _recv displays it
         self.tui.render()
 
 # ── Room entry ────────────────────────────────────────────────────────────────
