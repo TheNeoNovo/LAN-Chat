@@ -1,6 +1,6 @@
 # termchat
 
-LAN terminal chat. No internet. No accounts. No servers.
+LAN terminal chat. No internet. No accounts. No servers. Just your network.
 
 ## Install
 
@@ -14,17 +14,65 @@ curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh
 irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
 ```
 
+The installer detects your OS, installs Python if needed, and adds the `chat` command to your PATH.
+
+---
+
 ## Commands
 
 ```
-chat <room>         join or create a room
-chat <room> <pw>    join a password-protected room
-chat list           list rooms on LAN
-chat update         update termchat
-chat uninstall      remove termchat
+chat pub              join the public room
+chat <id>             join or create a private room
+chat <id> <pw>        join a password-protected room
+chat dm <id>          open a DM with someone
+chat list             scan LAN for open rooms
+chat who              see who is in a room
+chat help             show all commands
 ```
+
+To leave — run a new `chat` command or press `Ctrl-C`.
+
+---
+
+## Inside a room
+
+- Type and press Enter to send
+- `@name` to mention someone (highlighted for them)
+- Up/down arrows to scroll history
+- `Ctrl-C` to quit
+
+---
+
+## How it works
+
+- No internet — stays 100% on your LAN
+- No accounts — uses your OS username automatically
+- First person to join becomes the host
+- When the host leaves, the next person silently takes over
+- When everyone leaves, the room is gone
+
+---
 
 ## Requirements
 
 - Python 3.7+ (installer handles this)
 - Same WiFi / LAN as who you want to chat with
+- Ports: UDP 5353 (discovery), TCP 47331 (chat)
+
+---
+
+## Firewall
+
+If rooms can't find each other:
+
+**Linux:** `sudo ufw allow 47331/tcp && sudo ufw allow 5353/udp`
+
+**Windows:** Allow Python through Windows Defender Firewall when prompted.
+
+---
+
+## Uninstall
+
+**Linux / macOS:** `rm ~/.local/bin/chat ~/.local/bin/termchat.py`
+
+**Windows:** Delete `%USERPROFILE%\.termchat` and remove it from PATH in System Settings.
