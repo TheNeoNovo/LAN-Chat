@@ -14,23 +14,22 @@ curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh
 irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
 ```
 
-The installer detects your OS, installs Python if needed, and adds the `chat` command to your PATH.
-
 ---
 
 ## Commands
 
 ```
-chat pub              join the public room
-chat <id>             join or create a private room
-chat <id> <pw>        join a password-protected room
-chat dm <id>          open a DM with someone
-chat list             scan LAN for open rooms
-chat who              see who is in a room
-chat help             show all commands
+chat-pub              join the public room
+chat-<id>             join or create a private room
+chat-<id>-<pw>        join a password-protected room
+chat-dm-<id>          open a DM with someone
+chat-list             scan LAN for open rooms
+chat-who              see who is in a room
+chat-status-<s>       set your status (online / away / busy)
+chat-update           update to latest version
+chat-uninstall        remove termchat
+chat-help             show all commands
 ```
-
-To leave — run a new `chat` command or press `Ctrl-C`.
 
 ---
 
@@ -38,8 +37,33 @@ To leave — run a new `chat` command or press `Ctrl-C`.
 
 - Type and press Enter to send
 - `@name` to mention someone (highlighted for them)
-- Up/down arrows to scroll history
-- `Ctrl-C` to quit
+- `/topic <text>` to set the room topic (host only)
+- `/status <s>` to change your status
+- `chat-<cmd>` to leave the room and run a command
+- Up/Down arrows to scroll history
+- Ctrl-C to quit
+
+---
+
+## Layout
+
+```
+┌─ LAN Rooms ──┬─── Messages ──────────────┬─ Users ────┐
+│ #pub      *  │  12:00:01 alice - hey!     │ 2 online   │
+│ #devroom     │  12:00:05 bob - hi         │ ^ alice    │
+│              │  * bob joined              │  ● bob     │
+├──────────────┴────────────────────────────┴────────────┤
+│ alice > _                                               │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Statuses
+
+- `●` online
+- `○` away  
+- `◆` busy
 
 ---
 
@@ -47,9 +71,10 @@ To leave — run a new `chat` command or press `Ctrl-C`.
 
 - No internet — stays 100% on your LAN
 - No accounts — uses your OS username automatically
-- First person to join becomes the host
-- When the host leaves, the next person silently takes over
+- First person to join a room becomes the host
+- When the host leaves, next person silently takes over
 - When everyone leaves, the room is gone
+- Auto-reconnects if the host temporarily drops
 
 ---
 
@@ -61,18 +86,8 @@ To leave — run a new `chat` command or press `Ctrl-C`.
 
 ---
 
-## Firewall
-
-If rooms can't find each other:
-
-**Linux:** `sudo ufw allow 47331/tcp && sudo ufw allow 5353/udp`
-
-**Windows:** Allow Python through Windows Defender Firewall when prompted.
-
----
-
 ## Uninstall
 
-**Linux / macOS:** `rm ~/.local/bin/chat ~/.local/bin/termchat.py`
-
-**Windows:** Delete `%USERPROFILE%\.termchat` and remove it from PATH in System Settings.
+```
+chat-uninstall
+```
