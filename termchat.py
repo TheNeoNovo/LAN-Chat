@@ -21,7 +21,7 @@ if WINDOWS:
 else:
     import select, termios, tty, fcntl
 
-VERSION     = "1.0.2"
+VERSION     = "1.0.3"
 MCAST_GROUP = "224.0.0.251"
 MCAST_PORT  = 5353
 CHAT_PORT   = 47331
@@ -231,6 +231,10 @@ class Announcer:
         self.running = True
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self._sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+        # Send multicast on the real LAN interface, not a virtual adapter
+        lan_ip = get_lan_ip()
+        self._sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF,
+                              socket.inet_aton(lan_ip))
         threading.Thread(target=self._loop, daemon=True).start()
 
     def stop(self):
@@ -244,18 +248,31 @@ class Announcer:
             except: pass
             time.sleep(2)
 
+def get_lan_ip():
+    """Find the real LAN IP by connecting a UDP socket — picks the right interface."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return "0.0.0.0"
+
 class Discovery:
     def __init__(self):
         self.rooms = {}
 
     def start(self):
+        lan_ip = get_lan_ip()
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try: s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
         except AttributeError: pass
         s.bind(("", MCAST_PORT))
-        s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP,
-                     struct.pack("4sL", socket.inet_aton(MCAST_GROUP), socket.INADDR_ANY))
+        # Bind multicast to the real LAN interface, not a virtual adapter
+        mreq = struct.pack("4s4s", socket.inet_aton(MCAST_GROUP), socket.inet_aton(lan_ip))
+        s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         s.settimeout(0.5)
         self._sock = s
         threading.Thread(target=self._loop, daemon=True).start()
