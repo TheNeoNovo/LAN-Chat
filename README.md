@@ -1,6 +1,6 @@
 # termchat
 
-LAN terminal chat. No internet. No accounts. No servers. Just your network.
+LAN terminal chat. or sum idrk
 
 ## Install
 
@@ -14,7 +14,7 @@ curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh
 irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
 ```
 
-The installer detects your OS, installs Python if needed, and adds the `chat` command to your PATH.
+The installer detects your OS and installs Python if needed and adds the `chat` command to your PATH.
 
 ---
 
@@ -32,25 +32,6 @@ chat                  show all commands
 ```
 
 To leave — run a new `chat` command or press `Ctrl-C`.
-
----
-
-## Inside a room
-
-- Type and press Enter to send
-- `@name` to mention someone (highlighted for them) (Not Working)
-- Up/down arrows to scroll history
-- `Ctrl-C` to quit
-
----
-
-## How it works
-
-- No internet — stays 100% on your LAN/NET
-- No accounts — uses your OS username automatically
-- First person to join becomes the host
-- When the host leaves, the next person silently takes over (Not Working)
-- When everyone leaves, the room is gone
 
 ---
 
