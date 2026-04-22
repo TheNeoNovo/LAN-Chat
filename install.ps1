@@ -1,8 +1,8 @@
-# termchat Windows Installer (PowerShell)
-# Run with: irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
+# BladeChat Windows Installer (PowerShell)
+# Run with: irm https://raw.githubusercontent.com/FadingBlade/BladeChat/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
-$REPO = "https://raw.githubusercontent.com/TheNeoNovo/Termchat/main"
+$REPO = "https://raw.githubusercontent.com/FadingBlade/BladeChat/main"
 
 function Write-Step { Write-Host "  $args" -ForegroundColor Cyan }
 function Write-Ok   { Write-Host "  [OK] $args" -ForegroundColor Green }
@@ -10,7 +10,7 @@ function Write-Warn { Write-Host "  [!]  $args" -ForegroundColor Yellow }
 function Write-Fail { Write-Host "  [X]  $args" -ForegroundColor Red; exit 1 }
 
 Write-Host ""
-Write-Host "  termchat installer" -ForegroundColor Cyan -NoNewline
+Write-Host "  BladeChat installer" -ForegroundColor Cyan -NoNewline
 Write-Host " - LAN terminal chat" -ForegroundColor DarkGray
 Write-Host ""
 
@@ -55,7 +55,7 @@ if (-not $PYTHON) {
             Write-Warn "Python installed but this terminal can't see it yet."
             Write-Warn "Please close this window, open a NEW terminal, and run:"
             Write-Host ""
-            Write-Host "  irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex" -ForegroundColor Cyan
+            Write-Host "  irm https://raw.githubusercontent.com/FadingBlade/BladeChat/main/install.ps1 | iex" -ForegroundColor Cyan
             Write-Host ""
             exit 0
         }
@@ -69,16 +69,16 @@ Write-Ok "Using Python: $PYTHON ($pyVer)"
 
 # ── Install directory ─────────────────────────────────────────────────────────
 
-$INSTALL_DIR = "$env:USERPROFILE\.termchat"
+$INSTALL_DIR = "$env:USERPROFILE\.BladeChat"
 New-Item -ItemType Directory -Force -Path $INSTALL_DIR | Out-Null
 Write-Step "Installing to: $INSTALL_DIR"
 
-# ── Download termchat.py ──────────────────────────────────────────────────────
+# ── Download BladeChat.py ──────────────────────────────────────────────────────
 
-$DEST_PY = "$INSTALL_DIR\termchat.py"
-Write-Step "Downloading termchat..."
-Invoke-WebRequest -Uri "$REPO/termchat.py" -OutFile $DEST_PY -UseBasicParsing
-Write-Ok "Downloaded termchat.py"
+$DEST_PY = "$INSTALL_DIR\BladeChat.py"
+Write-Step "Downloading BladeChat..."
+Invoke-WebRequest -Uri "$REPO/BladeChat.py" -OutFile $DEST_PY -UseBasicParsing
+Write-Ok "Downloaded BladeChat.py"
 
 # ── Create c.cmd wrapper ──────────────────────────────────────────────────────
 
@@ -100,7 +100,7 @@ if ($currentPath -notlike "*$INSTALL_DIR*") {
 # ── Done ──────────────────────────────────────────────────────────────────────
 
 Write-Host ""
-Write-Ok "termchat installed!"
+Write-Ok "BladeChat installed!"
 Write-Host ""
 Write-Host "  Open a NEW terminal window, then type:" -ForegroundColor Yellow
 Write-Host ""

@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
-# termchat installer — Linux / macOS
-# Usage: curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh | sh
+# BladeChat installer — Linux / macOS
+# Usage: curl -fsSL https://raw.githubusercontent.com/FadingBlade/BladeChat/main/install.sh | sh
 
 set -e
 
-REPO="https://raw.githubusercontent.com/TheNeoNovo/Termchat/main"
+REPO="https://raw.githubusercontent.com/FadingBlade/BladeChat/main"
 
 RED='\033[0;31m'; GRN='\033[0;32m'; YEL='\033[0;33m'; CYN='\033[0;36m'
 BOLD='\033[1m'; RST='\033[0m'
@@ -14,7 +14,7 @@ warn() { printf "${YEL}!${RST} %s\n" "$1"; }
 fail() { printf "${RED}✗${RST} %s\n" "$1"; exit 1; }
 
 echo ""
-printf "${BOLD}${CYN}Termchat installer${RST} — LAN terminal chat\n"
+printf "${BOLD}${CYN}BladeChat installer${RST} — LAN terminal chat\n"
 echo ""
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
@@ -88,22 +88,22 @@ say "Installing to: $INSTALL_DIR"
 
 # ── Download ──────────────────────────────────────────────────────────────────
 
-say "Downloading termchat..."
+say "Downloading BladeChat..."
 if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$REPO/termchat.py" -o "$INSTALL_DIR/termchat.py"
+    curl -fsSL "$REPO/BladeChat.py" -o "$INSTALL_DIR/BladeChat.py"
 elif command -v wget >/dev/null 2>&1; then
-    wget -q "$REPO/termchat.py" -O "$INSTALL_DIR/termchat.py"
+    wget -q "$REPO/BladeChat.py" -O "$INSTALL_DIR/BladeChat.py"
 else
     fail "curl or wget is required."
 fi
-chmod +x "$INSTALL_DIR/termchat.py"
-ok "Downloaded termchat.py"
+chmod +x "$INSTALL_DIR/BladeChat.py"
+ok "Downloaded BladeChat.py"
 
 # ── Create c wrapper ──────────────────────────────────────────────────────────
 
 cat > "$INSTALL_DIR/chat" << WRAPPER
 #!/usr/bin/env sh
-exec "$PYTHON" "$INSTALL_DIR/termchat.py" "\$@"
+exec "$PYTHON" "$INSTALL_DIR/BladeChat.py" "\$@"
 WRAPPER
 chmod +x "$INSTALL_DIR/chat"
 ok "Created chat command"
@@ -121,7 +121,7 @@ case ":$PATH:" in
         else
             PROFILE="$HOME/.bashrc"
         fi
-        printf '\n# termchat\nexport PATH="%s:$PATH"\n' "$INSTALL_DIR" >> "$PROFILE"
+        printf '\n# BladeChat\nexport PATH="%s:$PATH"\n' "$INSTALL_DIR" >> "$PROFILE"
         ok "Added to $PROFILE"
         warn "Run: source $PROFILE  (or open a new terminal)"
         ;;
@@ -130,7 +130,7 @@ esac
 # ── Done ──────────────────────────────────────────────────────────────────────
 
 echo ""
-ok "${BOLD}Termchat installed!${RST}"
+ok "${BOLD}BladeChat installed!${RST}"
 echo ""
 printf "  ${CYN}chat pub${RST}           join the public room\n"
 printf "  ${CYN}chat <id>${RST}          join a private room\n"

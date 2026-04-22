@@ -1,17 +1,17 @@
-# termchat
+# BladeChat
 
-LAN terminal chat. or sum idrk
+LAN terminal chat.
 
 ## Install
 
 **Linux / macOS:**
 ```sh
-curl -fsSL https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/FadingBlade/BladeChat/main/install.sh | sh
 ```
 
 **Windows PowerShell:**
 ```powershell
-irm https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/FadingBlade/BladeChat/main/install.ps1 | iex
 ```
 
 The installer detects your OS and installs Python if needed and adds the `chat` command to your PATH.
@@ -55,8 +55,8 @@ If rooms can't find each other:
 
 ## Uninstall
 
-**Linux / macOS:** `rm ~/.local/bin/chat ~/.local/bin/termchat.py`
+**Linux / macOS:** `rm ~/.local/bin/chat ~/.local/bin/BladeChat.py`
 
-**Windows:** Delete `%USERPROFILE%\.termchat` and remove it from PATH in System Settings.
+**Windows:** Delete `%USERPROFILE%\.BladeChat` and remove it from PATH in System Settings.
 
 (Or just you know chat uninstall)

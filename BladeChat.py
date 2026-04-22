@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-termchat — LAN terminal chat. No internet. No accounts. Just chat.
+BladeChat — LAN terminal chat. No internet. No accounts. Just chat.
 
   chat pub              join public room
   chat <id>             join/create private room
@@ -131,7 +131,7 @@ class TUI:
             "dm":       f"{C.BYEL}DM:{self.room_id}{C.RST}{C.BG}",
         }.get(self.room_type, self.room_id)
         nc  = name_color(self.username)
-        bar = (f"{C.BG}{C.BOLD}{C.BWHT} termchat {C.RST}{C.BG}"
+        bar = (f"{C.BG}{C.BOLD}{C.BWHT} BladeChat {C.RST}{C.BG}"
                f"  {room_label}  "
                f"{C.DIM}{nc}{self.username}{C.RST}{C.BG}{host_tag}"
                f"{C.DIM}  chat help{C.RST}")
@@ -642,7 +642,7 @@ def cmd_who(room_id):
 
 def cmd_help():
     print(f"""
-  {C.BOLD}{C.BCYN}termchat{C.RST} {C.DIM}v{VERSION}{C.RST}
+  {C.BOLD}{C.BCYN}BladeChat{C.RST} {C.DIM}v{VERSION}{C.RST}
 
   {C.BOLD}Commands:{C.RST}
     {C.BCYN}chat pub{C.RST}              join the public room
@@ -652,7 +652,7 @@ def cmd_help():
     {C.BCYN}chat list{C.RST}             scan LAN for open rooms
     {C.BCYN}chat who{C.RST}              see who is in a room
     {C.BCYN}chat update{C.RST}           update to the latest version
-    {C.BCYN}chat uninstall{C.RST}        remove termchat from this machine
+    {C.BCYN}chat uninstall{C.RST}        remove BladeChat from this machine
     {C.BCYN}chat help{C.RST}             show this help
 
   {C.BOLD}Inside a room:{C.RST}
@@ -670,7 +670,7 @@ def _find_self():
 
 def cmd_update():
     import urllib.request
-    RAW = "https://raw.githubusercontent.com/TheNeoNovo/Termchat/main/termchat.py"
+    RAW = "https://raw.githubusercontent.com/FadingBlade/BladeChat/main/BladeChat.py"
     script, _ = _find_self()
     print(f"{C.DIM}Checking for update...{C.RST}", flush=True)
     try:
@@ -693,13 +693,13 @@ def cmd_update():
 
 def cmd_uninstall():
     script, folder = _find_self()
-    print(f"{C.BYEL}This will remove termchat from your machine.{C.RST}")
+    print(f"{C.BYEL}This will remove BladeChat from your machine.{C.RST}")
     ans = input("  Are you sure? [y/N] ").strip().lower()
     if ans != "y":
         print(f"{C.DIM}Cancelled.{C.RST}"); return
 
     removed = []
-    # Remove termchat.py
+    # Remove BladeChat.py
     try: os.remove(script); removed.append(script)
     except Exception as e: print(f"{C.DIM}Could not remove {script}: {e}{C.RST}")
 
@@ -712,7 +712,7 @@ def cmd_uninstall():
     if removed:
         print(f"{C.BGRN}Removed:{C.RST}")
         for f in removed: print(f"  {C.DIM}{f}{C.RST}")
-    print(f"{C.DIM}termchat uninstalled. Goodbye.{C.RST}")
+    print(f"{C.DIM}BladeChat uninstalled. Goodbye.{C.RST}")
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
